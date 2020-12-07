@@ -1,0 +1,50 @@
+# 三个线程，分别打印0、奇数、偶数。写一个程序，使打印结果为“01020304050607...”。输入为打印int的个数
+
+import threading
+
+
+def solution(target):
+  global cur
+  cur = 0
+  
+  lock = threading.Lock()
+  tZero = threading.Thread(target=printZero, args=(lock, target))
+  tOdd = threading.Thread(target=printOdd, args=(lock, target))
+  tEven = threading.Thread(target=printEven, args=(lock, target))
+  
+  tZero.start()
+  tOdd.start()
+  tEven.start()
+  
+  tZero.join()
+  tOdd.join()
+  tEven.join()
+ 
+def printZero(lock, target):
+  global cur
+  while cur < target:  # print until target iterations
+    lock.acquire()  # whenver read or write a global var, lock it
+    if cur < target and cur % 2 == 0:  # check again if we have reached target or not
+      print(0, end='')
+      cur += 1
+    lock.release()
+    
+def printOdd(lock, target):
+  global cur
+  while cur < target:
+    lock.acquire()
+    if cur < target and cur % 4 == 1:
+      print(cur // 2 + 1, end='')
+      cur += 1
+    lock.release()
+    
+def printEven(lock, target):
+  global cur
+  while cur < target:
+    lock.acquire()
+    if cur < target and cur % 4 == 3:
+      print(cur // 2 + 1, end='')
+      cur += 1
+    lock.release()
+
+solution(18)
