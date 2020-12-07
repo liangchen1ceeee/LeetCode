@@ -1,0 +1,27 @@
+# Inputs:
+#   你有M万元（M为整数，100<M<50000）
+#   理财产品有N个（1<N<20）
+#   每个产品投资额度为V0，V1···Vn-1（Vi为整数，10<Vi<50000，单位万）
+#   对应期望年化率R0，R1···Rn-1。（Ri为整数，单位：元）
+# Outputs:
+#   那么如何投资才能将整体收益最大化？
+
+def maxReturn(M, V, R):
+  # 返回每个产品应投资多少钱，以及最大收益
+  if len(R) == 0:
+    return [], 0
+    
+  results = [0] * len(V)
+  sortedProducts = sorted(range(len(R)), key=R.__getitem__, reverse=True)
+  
+  left = M
+  for i in sortedProducts:
+    if V[i] <= left:
+      results[i] = V[i]
+      left -= V[i]
+    else:
+      results[i] = left
+      return results, sum([results[i] * R[i] for i in range(len(results))])
+  
+  return results, sum([results[i] * R[i] for i in range(len(results))])
+  
