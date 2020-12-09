@@ -1,0 +1,29 @@
+# Inputs:
+#   NxN integer square
+# Actions:
+#   Remove one interger in every column, and the removed integers in adjacent columns are not in the same row.
+# Question:
+#   In all possible removal solutions, give the minimal sum of the rest numbers. (留下的数字之和的最小值。)
+
+from copy import copy, deepcopy
+
+
+def minimalSum(array):
+    if not array or len(array) == 0 or len(array[0]) == 0:
+        return 0
+
+    # an dp array of size(m, n), and dp[i, j] = the max sum of removed values from col [0, j] if array[i, j] is removed
+    dp = [[array[i][j] for j in range(len(array[0]))] for i in range(len(array))]
+    dp = deepcopy(array)
+
+    for col in range(1, len(array[0])):
+        for row in range(len(array)):
+            dp[row][col] = array[row][col] + max([dp[i][col - 1] for i in range(len(array)) if i != row])
+
+    total = sum([sum(array[row]) for row in range(len(array))])
+
+    return total - max([dp[i][len(array[0]) - 1] for i in range(len(array))])
+
+
+print(minimalSum([[1, 2, 3],
+                  [-5, 4, 5]]))
