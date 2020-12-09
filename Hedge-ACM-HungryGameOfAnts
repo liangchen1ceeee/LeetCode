@@ -1,0 +1,73 @@
+# 2015 ec-final Problem F. Hungry Game of Ants
+# There are n ants in the position of 1 to n (the position is 0 and the position is n + 1). 
+# Their weights are 1 to n respectively. In fact, n ants randomly select one of the left and right directions and start walking at the same time. 
+# At the end of the turn, the two ants meet and fight, the heavier wins, the lighter ones eaten, and the weight becomes the sum of the two
+# Asks the number of schemes for the last kth ant to survive (2 ^ n total) Happening)
+# 
+# https://blog.csdn.net/qq_35802619/article/details/108403778
+# https://programmersought.com/article/3873984404/
+
+
+def combination(n):
+    results = []
+    combHelper(n, 0, '', results)
+
+    return results
+
+def combHelper(n, i, result, results):
+    if i == n:
+        results.append(result)
+        return
+
+    combHelper(n, i + 1, result + '0', results)
+    combHelper(n, i + 1, result + '1', results)
+
+def prob(n):
+    winners = []
+    combs = combination(n - 2)
+    for comb in combs:
+        comb = '0' + comb + '1'
+        winners.append(winner([{'dir': int(comb[i]), 'score': 1, 'id': i + 1} for i in range(len(comb))]))
+        # print(comb, winners[-1])
+
+    probs = [0] * n
+    for w in winners:
+        probs[w - 1] += 1
+
+    return [prob / sum(probs) for prob in probs]
+
+
+def winner(combination):
+    if len(combination) == 1:
+        return combination[0]['id']
+
+    i, j = 0, 0
+    # [0, i): good
+    # [i, j): bad
+    # j: cur
+    while j < len(combination) - 1:
+        if combination[j]['dir'] == 0 and combination[j + 1]['dir'] == 1:
+            if combination[j]['score'] > combination[j + 1]['score']:
+                combination[i] = {'dir': 0, 'score': combination[j]['score'] + combination[j + 1]['score'], 'id': combination[j]['id']}
+                i += 1
+                j += 2
+            else:
+                combination[i] = {'dir': 1, 'score': combination[j]['score'] + combination[j + 1]['score'], 'id': combination[j + 1]['id']}
+                i += 1
+                j += 2
+        else:
+            combination[i] = combination[j]
+            i += 1
+            j += 1
+
+    combination[0]['dir'] = 0
+    if j == len(combination) - 1:
+        combination[i] = combination[j]
+        i += 1
+
+    return winner(combination[:i])
+
+
+for n in [2, 3, 4, 5, 6, 7, 8, 9, 10]:
+    print(f'n={n}时，k=n的蚂蚁存活概率为{sum([1/2**i for i in range((n + 1)//2, n-1)]) + 1/2**(n-2)}')
+    print(f'       k=[1, n]的蚂蚁存活概率为{prob(n)}')
