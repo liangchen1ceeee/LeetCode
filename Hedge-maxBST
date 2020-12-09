@@ -1,0 +1,44 @@
+# input: root node
+# output: root node of the BST of most nodes
+
+def maxBST(root):
+  if not root:
+    return root
+    
+def helper(root):
+  # return
+  # isBST with the current root
+  # number of nodes including the current root
+  # min of the current tree
+  # max of the current tree
+  # cur root of max BST
+  # cur num of max BST
+  if root.left == None and root.right == None:
+    return True, 1, root.val, root.val, root, 1
+  
+  if root.left == None:
+    isBST, nodes, minVal, maxVal, resultRoot, resultNodes = helper(root.right)
+    isBST = isBST and root.val < minVal
+    resultRoot = root if isBST else resultRoot
+    resultNodes = nodes + 1 if isBST else nodes
+    return isBST, nodes + 1, root.val, maxVal, resultRoot, resultNodes
+  
+  if root.right == None:
+    isBST, nodes, minVal, maxVal, resultRoot, resultNodes = helper(root.left)
+    isBST = isBST and root.val > maxVal
+    resultRoot = root if isBST else resultRoot
+    resultNodes = nodes + 1 if isBST else nodes
+    return isBST, nodes + 1, minVal, root.val, resultRoot, resultNodes
+  
+  isBSTL, nodesL, minValL, maxValL, resultRootL, resultNodesL = helper(root.left)
+  isBSTR, nodesR, minValR, maxValR, resultRootR, resultNodesR = helper(root.right)
+  
+  if isBSTL and isBSTR and root.val > maxValL and root.val < minValR:
+    return True, nodesL + nodesR + 1, minValL, maxValR, root, nodesL + nodesR + 1
+  
+  if resultNodesL < resultNodesR:
+    return False, nodesL + nodesR + 1, minValL, maxValR, resultRootR, resultNodesR
+  else:
+    return False, nodesL + nodesR + 1, minValL, maxValR, resultRootL, resultNodesL
+  
+  
