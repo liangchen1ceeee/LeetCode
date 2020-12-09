@@ -5,6 +5,8 @@ def maxBST(root):
   if not root:
     return root
     
+  return helper(root)[-2]
+    
 def helper(root):
   # return
   # isBST with the current root
